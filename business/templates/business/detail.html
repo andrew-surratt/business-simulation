@@ -1,0 +1,47 @@
+<h1>{{ business.name }}</h1>
+<p>Type: {{ business.type.name }}</p>
+<p>Location: {{ business.location }}</p>
+<br>
+<h3>Revenue Sources</h3>
+<ul>
+{% for source in revenue_sources %}
+    <li>{{ source.name }}</li>
+    <li>Amount: {{ source.amount }} {{ source.currency.name }} {{ source.frequency.name }}</li>
+{% endfor %}
+</ul>
+
+<h3>Expense Sources</h3>
+<ul>
+{% for source in expense_sources %}
+    <li>Name: {{ source.name }}</li>
+    <li>Amount: {{ source.amount }} {{ source.currency.name }} {{ source.frequency.name }}</li>
+{% endfor %}
+</ul>
+
+<div class="col-6">
+  <canvas id="chart"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+  const ctx = document.getElementById('chart').getContext('2d');
+  const myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels : [{% for item in labels %}"{{ item }}",{% endfor %}],
+          datasets: [{
+            label: "Profit over time",
+            data : [{% for item in values %}{{ item }},{% endfor %}],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+  </script>
+</div>
