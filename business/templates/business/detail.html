@@ -1,47 +1,48 @@
-<h1>{{ business.name }}</h1>
-<p>Type: {{ business.type.name }}</p>
-<p>Location: {{ business.location }}</p>
-<br>
-<h3>Revenue Sources</h3>
-<ul>
-{% for source in revenue_sources %}
-    <li>{{ source.name }}</li>
-    <li>Amount: {{ source.amount }} {{ source.currency.name }} {{ source.frequency.name }}</li>
-{% endfor %}
-</ul>
+{% extends "base_generic.html" %}
 
-<h3>Expense Sources</h3>
-<ul>
-{% for source in expense_sources %}
-    <li>Name: {{ source.name }}</li>
-    <li>Amount: {{ source.amount }} {{ source.currency.name }} {{ source.frequency.name }}</li>
-{% endfor %}
-</ul>
+{% block content %}
+  <h2>{{ business.name }}</h2>
+  <p class="mt-2"><strong>Type:</strong> {{ business.type.name }}</p>
+<p><strong>Location:</strong> {{ business.location }}</p>
+  <br>
+  <h5>Revenue Sources</h5>
+  <ul>
+  {% for source in revenue_sources %}
+    <li><strong>{{ source.name }}</strong> :: {{ source.currency.symbol }}{{ source.amount|floatformat:2 }} {{ source.frequency.name }}</li>
+  {% endfor %}
+  </ul>
 
-<div class="col-6">
-  <canvas id="chart"></canvas>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-  const ctx = document.getElementById('chart').getContext('2d');
-  const myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels : [{% for item in labels %}"{{ item }}",{% endfor %}],
-          datasets: [{
-            label: "Profit over time",
-            data : [{% for item in values %}{{ item }},{% endfor %}],
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-          }]
-      },
-      options: {
-          scales: {
-              y: {
-                  beginAtZero: true
+  <h5>Expense Sources</h5>
+  <ul>
+  {% for source in expense_sources %}
+    <li><strong>{{ source.name }}</strong> :: {{ source.currency.symbol }}{{ source.amount|floatformat:2 }} {{ source.frequency.name }}</li>
+  {% endfor %}
+  </ul>
+    <div class="col-6">
+      <canvas id="chart"></canvas>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+      const ctx = document.getElementById('chart').getContext('2d');
+      const myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels : [{% for item in labels %}"{{ item }}",{% endfor %}],
+              datasets: [{
+                label: "Profit over time by Month ({{ business.currency.symbol }})",
+                data : [{% for item in values %}{{ item }},{% endfor %}],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
               }
           }
-      }
-  });
-  </script>
-</div>
+      });
+      </script>
+  </div>
+{% endblock %}
