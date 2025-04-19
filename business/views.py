@@ -34,9 +34,11 @@ def detail(request, id):
 
     profit_per_month = revenue_per_month - expense_per_month
 
+    profit_by_month = [profit_per_month*m for m in range(1, len(months)+1)]
+
     context = {
         "labels": months,
-        "values": [profit_per_month*m for m in range(1, len(months)+1)],
+        "values": profit_by_month,
         "business": business,
         "revenue_sources": revenue_sources,
         "expense_sources": expense_sources
