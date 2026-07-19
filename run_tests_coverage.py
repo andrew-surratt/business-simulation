@@ -22,12 +22,16 @@ from django.test.utils import get_runner
 import coverage
 
 if __name__ == "__main__":
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'business_dashboard.settings'
-    django.setup()
-    
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'business-dashboard.settings'
+
     # Start coverage
-    cov = coverage.Coverage(source=['business'])
+    cov = coverage.Coverage(
+        source=['business'],
+        omit=['business/tests.py'],
+    )
     cov.start()
+
+    django.setup()
     
     TestRunner = get_runner(settings)
     test_runner = TestRunner(verbosity=2, interactive=True, keepdb=False)
