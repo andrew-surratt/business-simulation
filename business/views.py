@@ -9,8 +9,6 @@ from business.models import Business, RevenueSource, ExpenseSource
 def index(request):
     businesses = Business.objects.order_by('-name')
 
-    print(", ".join([f"{b.name} ({b.location})" for b in businesses]))
-
     context = {"businesses": businesses}
     return render(request, "business/index.html", context)
 
@@ -43,9 +41,5 @@ def detail(request, id):
         "revenue_sources": revenue_sources,
         "expense_sources": expense_sources
     }
-
-    print(", ".join([f"{r.name} ({r.business.name})" for r in revenue_sources]))
-    print(", ".join([f"{e.name} ({e.business.name})" for e in expense_sources]))
-
 
     return render(request, "business/detail.html", context)
