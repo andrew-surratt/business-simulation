@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -55,16 +59,10 @@ jobs:
           coverage report
 
       - name: Generate coverage report
+        if: always()
         run: |
-          coverage json
+          coverage json -o coverage.json
           coverage report --fail-under=80
-
-      - name: Upload coverage to Codecov (optional)
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage.json
-          flags: unittests
-          fail_ci_if_error: false
 
       - name: Comment on PR with test results
         if: always()
@@ -72,17 +70,18 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            let coverage = '';
+            let coverage = '❌ Coverage percentage unavailable';
             try {
-              const data = fs.readFileSync('.coverage', 'utf8');
-              coverage = '✅ Coverage report generated';
+              const data = JSON.parse(fs.readFileSync('coverage.json', 'utf8'));
+              const percentage = Number(data.totals.percent_covered).toFixed(2);
+              coverage = `✅ Code coverage: **${percentage}%**`;
             } catch (e) {
-              coverage = '❌ Could not read coverage report';
+              core.warning(`Could not read coverage report: ${e.message}`);
             }
-            
-            github.rest.issues.createComment({
+
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '## Test Results\n\n' + coverage + '\n\nRun `coverage report` locally to see detailed results.'
+              body: `## Test Results\n\n${coverage}\n\nThe workflow requires at least 80% coverage.`
             });
