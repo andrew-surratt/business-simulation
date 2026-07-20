@@ -1,5 +1,11 @@
-.sidebar-nav {
-  margin-top: 20px;
-  padding: 0;
-  list-style: none;
+.htmx-indicator {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease-in;
+  z-index: 2000;
+}
+
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+  opacity: 1;
 }
