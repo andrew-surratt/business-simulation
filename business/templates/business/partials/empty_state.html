@@ -1,0 +1,13 @@
+<div class="empty py-4">
+  <p class="empty-title">{{ title }}</p>
+  {% if description %}<p class="empty-subtitle text-secondary">{{ description }}</p>{% endif %}
+  {% if action_url %}
+    <div class="empty-action">
+      <a
+        class="btn btn-primary"
+        href="{{ action_url }}"
+        {% if use_modal %}hx-get="{{ action_url }}" hx-target="#modal-content" hx-swap="innerHTML"{% endif %}
+      >{{ action_label }}</a>
+    </div>
+  {% endif %}
+</div>

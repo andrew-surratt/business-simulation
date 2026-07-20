@@ -62,24 +62,7 @@
 
         <main class="page-body" id="main-content">
           <div class="container-xl">
-            {% if messages %}
-              <div aria-live="polite" aria-atomic="true">
-                {% for message in messages %}
-                  <div
-                    class="alert alert-{{ message.tags|default:'info' }} alert-dismissible"
-                    role="alert"
-                  >
-                    <div>{{ message }}</div>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="alert"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                {% endfor %}
-              </div>
-            {% endif %}
+            {% include "business/partials/messages.html" %}
 
             {% block content %}{% endblock %}
           </div>
@@ -96,6 +79,15 @@
     </div>
 
     <div
+      class="modal modal-blur fade"
+      id="form-modal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div id="modal-content"></div>
+    </div>
+
+    <div
       id="htmx-indicator"
       class="htmx-indicator progress progress-sm position-fixed top-0 start-0 w-100"
       role="progressbar"
@@ -106,6 +98,29 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+    <script>
+      (() => {
+        const modalElement = document.getElementById("form-modal");
+        const modalContent = document.getElementById("modal-content");
+
+        document.body.addEventListener("htmx:afterSwap", (event) => {
+          if (event.detail.target !== modalContent) return;
+          const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+          modal.show();
+          modalElement.addEventListener("shown.bs.modal", () => {
+            modalContent.querySelector("[autofocus], input, select, textarea")?.focus();
+          }, { once: true });
+        });
+
+        document.body.addEventListener("uiUpdated", () => {
+          bootstrap.Modal.getInstance(modalElement)?.hide();
+        });
+
+        modalElement.addEventListener("hidden.bs.modal", () => {
+          modalContent.replaceChildren();
+        });
+      })();
+    </script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>

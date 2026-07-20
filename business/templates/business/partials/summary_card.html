@@ -1,0 +1,7 @@
+<div class="card h-100">
+  <div class="card-body">
+    <div class="text-secondary text-uppercase small fw-bold">{{ label }}</div>
+    <div class="h2 mb-0 mt-2 {{ value_class }}">{{ currency }}{{ value|floatformat:2 }}</div>
+    {% if description %}<div class="text-secondary mt-1">{{ description }}</div>{% endif %}
+  </div>
+</div>

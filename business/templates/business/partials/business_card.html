@@ -1,0 +1,12 @@
+<div class="col-12 col-md-6 col-xl-4">
+  <div class="card h-100">
+    <div class="card-body">
+      <h2 class="card-title"><a href="{% url 'business:detail' business.id %}">{{ business.name }}</a></h2>
+      <div class="text-secondary">{{ business.type.name }}</div>
+      {% if business.location %}<div class="mt-2">{{ business.location }}</div>{% endif %}
+    </div>
+    <div class="card-footer bg-transparent">
+      <a href="{% url 'business:detail' business.id %}">View dashboard</a>
+    </div>
+  </div>
+</div>

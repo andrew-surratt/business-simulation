@@ -1,19 +1,33 @@
 {% extends "base_generic.html" %}
 
 {% block page_title %}Home{% endblock %}
+{% block page_actions %}
+  <a
+    class="btn btn-primary"
+    href="{% url 'business:business_create' %}"
+    hx-get="{% url 'business:business_create' %}"
+    hx-target="#modal-content"
+    hx-swap="innerHTML"
+  >Create business</a>
+{% endblock %}
 
 {% block content %}
-    <p>
+    <p class="text-secondary">
         Welcome to the Business Simulator, a website to test your ideas!
     </p>
     {% if businesses %}
         <p>Check out any of the following {{ businesses|length }} business(es).</p>
-        <ul>
+        <div class="row row-cards">
         {% for business in businesses %}
-            <li><a href="/business/{{ business.id }}/">{{ business.name }}</a></li>
+            {% include "business/partials/business_card.html" %}
         {% endfor %}
-        </ul>
+        </div>
     {% else %}
-        <p>No businesses created.</p>
+        {% url 'business:business_create' as create_business_url %}
+        <div class="card">
+          <div class="card-body">
+            {% include "business/partials/empty_state.html" with title="No businesses created." description="Create a business to start testing your idea." action_url=create_business_url action_label="Create business" use_modal=True %}
+          </div>
+        </div>
     {% endif %}
 {% endblock %}
