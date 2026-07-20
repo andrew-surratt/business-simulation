@@ -33,13 +33,22 @@ Override them in the environment when needed. CI uses the same PostgreSQL versio
 
 ## Test
 
-Run tests:
+During local development, run only the fast unit tests without PostgreSQL, Docker, network access, or dependency synchronization:
 
-`uv run --locked manage.py test business`
+`make test-unit`
 
-Run tests with coverage report:
+This offline command requires `uv sync --locked --group test` to have been run previously. Unit tests must not use the ORM, Django test client, network, or other external services.
 
-`uv run --locked coverage run manage.py test business && uv run --locked coverage report`
+Before opening a pull request, start PostgreSQL and run the complete unit and integration suite:
+
+```shell
+docker compose up -d postgres
+make test
+```
+
+CI runs that same `make test` command against PostgreSQL. It always runs all tests; the unit-only command is a local development shortcut.
+
+Coverage must be at least 80%.
 
 ## Start
 

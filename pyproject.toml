@@ -16,9 +16,8 @@ test = [
 
 [tool.coverage.run]
 source = ["business"]
-omit = ["business/tests.py"]
+omit = ["business/tests/*"]
 
 [tool.coverage.report]
 fail_under = 80
 show_missing = true
-

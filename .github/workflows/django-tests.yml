@@ -61,13 +61,11 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_HOST: localhost
-        run: uv run --locked coverage run manage.py test business
+        run: make test
 
       - name: Generate coverage report
         if: always()
-        run: |
-          uv run --locked coverage json -o coverage.json
-          uv run --locked coverage report
+        run: uv run --locked coverage json -o coverage.json
 
       - name: Comment on PR with test results
         if: always()

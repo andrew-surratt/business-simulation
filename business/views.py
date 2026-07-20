@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from business.models import Business, RevenueSource, ExpenseSource
+from business.services import cumulative_profit_by_month
 
 
 # Create your views here.
@@ -18,21 +19,11 @@ def detail(request, id):
     expense_sources = ExpenseSource.objects.filter(business=business)
     months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 
-    revenue_per_month = 0
-    for source in revenue_sources:
-        days_in_month = 30
-        mult = source.frequency.interval_in_days / days_in_month
-        revenue_per_month += (source.amount / mult)
-
-    expense_per_month = 0
-    for source in expense_sources:
-        days_in_month = 30
-        mult = source.frequency.interval_in_days / days_in_month
-        expense_per_month += (source.amount / mult)
-
-    profit_per_month = revenue_per_month - expense_per_month
-
-    profit_by_month = [profit_per_month*m for m in range(1, len(months)+1)]
+    profit_by_month = cumulative_profit_by_month(
+        revenue_sources,
+        expense_sources,
+        month_count=len(months),
+    )
 
     context = {
         "labels": months,

@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 from business.models import (
     BusinessType, Currency, Business, Frequency, 
@@ -596,7 +596,7 @@ class DetailViewTest(TestCase):
 
 
 # ============================================================================
-# INTEGRATION TESTS
+# WORKFLOW TESTS
 # ============================================================================
 
 class BusinessWorkflowTest(TestCase):
