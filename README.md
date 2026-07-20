@@ -1,8 +1,49 @@
 # Business Simulation
 
+## Prerequisites
+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- Docker with Docker Compose
+
+Install the locked application and test dependencies:
+
+`uv sync --locked --group test`
+
+For a runtime-only environment without coverage or other test tools, use:
+
+`uv sync --locked --no-dev`
+
+## Database
+
+Start PostgreSQL locally:
+
+`docker compose -f compose.yaml up -d`
+
+The application and tests use these defaults:
+
+| Variable | Default |
+| --- | --- |
+| `POSTGRES_DB` | `business_dashboard` |
+| `POSTGRES_USER` | `postgres` |
+| `POSTGRES_PASSWORD` | `postgres` |
+| `POSTGRES_HOST` | `localhost` |
+| `POSTGRES_PORT` | `5432` |
+
+Override them in the environment when needed. CI uses the same PostgreSQL version and settings.
+
+## Test
+
+Run tests:
+
+`uv run --locked manage.py test business`
+
+Run tests with coverage report:
+
+`uv run --locked coverage run manage.py test business && uv run --locked coverage report`
+
 ## Start
 
-`python manage.py runserver`
+`uv run --locked python manage.py runserver`
 
 Site is available at http://localhost:8000/
 
@@ -10,19 +51,19 @@ Site is available at http://localhost:8000/
 
 If needed, update migrations:
 
-`python manage.py makemigrations`
+`uv run --locked python manage.py makemigrations`
 
 Run migration:
 
-`python manage.py migrate`
+`uv run --locked python manage.py migrate`
 
 ## Admin
 Admin site is available at http://localhost:8000/admin/
 
 ### Create Admin Superuser
 
-`python manage.py createsuperuser`
+`uv run --locked python manage.py createsuperuser`
 
 ### Change Password
 
-`python manage.py changepassword <username>`
+`uv run --locked python manage.py changepassword <username>`

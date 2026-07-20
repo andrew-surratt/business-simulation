@@ -1,4 +1,0 @@
-Django~=5.2.0
-coverage>=7.0,<8.0
-django-crispy-forms==2.4
-crispy-bootstrap5==2025.6
