@@ -21,23 +21,49 @@ Start PostgreSQL locally:
 
 The application and tests use these defaults:
 
-| Variable | Default |
-| --- | --- |
-| `POSTGRES_DB` | `business_dashboard` |
-| `POSTGRES_USER` | `postgres` |
-| `POSTGRES_PASSWORD` | `postgres` |
-| `POSTGRES_HOST` | `localhost` |
-| `POSTGRES_PORT` | `5432` |
+| Variable            | Default              | Description                                            |
+|---------------------|----------------------|--------------------------------------------------------|
+| `POSTGRES_DB`       | `business_dashboard` | Postgres DB                                            |
+| `POSTGRES_USER`     | `postgres`           | Postgres User                                          |
+| `POSTGRES_PASSWORD` | None                 | (Required) Postgres Password                           |
+| `POSTGRES_HOST`     | `localhost`          | Postgres Host                                          |
+| `POSTGRES_PORT`     | `5432`               | Postgres Port                                          |
+| `DJANGO_SECRET_KEY` | None                 | (Required) Django Secret Key for cryptographic signing |
 
-Override them in the environment when needed. CI uses the same PostgreSQL version and settings.
+Override them in the environment when needed. **For production deployments, always set `POSTGRES_PASSWORD` and `SECRET_KEY` as environment variables.**
+
+### Setting Environment Variables
+
+Create a `.env` file or export variables in your shell:
+
+```bash
+DJANGO_SECRET_KEY='your-secret-key-here'
+POSTGRES_PASSWORD='your-secure-password'
+POSTGRES_HOST='your-db-host'
+POSTGRES_USER='your-db-user'
+```
+
+Then run:
+
+```bash
+uv run --locked python manage.py runserver
+```
+
+### GitHub Actions Secrets
+
+For CI/CD, add these secrets to your repository settings:
+
+1. Go to **Settings > Secrets and variables > Actions**
+2. Click **New repository secret**
+3. Add the following secrets:
+   - `DJANGO_SECRET_KEY` - A secure Django secret key (generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`)
+   - `POSTGRES_PASSWORD` - Your test database password
 
 ## Test
 
-During local development, run only the fast unit tests without PostgreSQL, Docker, network access, or dependency synchronization:
+To run only the unit tests without PostgreSQL, or Docker:
 
 `make test-unit`
-
-This offline command requires `uv sync --locked --group test` to have been run previously. Unit tests must not use the ORM, Django test client, network, or other external services.
 
 Before opening a pull request, start PostgreSQL and run the complete unit and integration suite:
 
@@ -45,10 +71,6 @@ Before opening a pull request, start PostgreSQL and run the complete unit and in
 docker compose up -d postgres
 make test
 ```
-
-CI runs that same `make test` command against PostgreSQL. It always runs all tests; the unit-only command is a local development shortcut.
-
-Coverage must be at least 80%.
 
 ## Start
 
