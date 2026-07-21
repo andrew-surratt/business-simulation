@@ -1,0 +1,13 @@
+<h2 class="card-title">Delete “{{ source.name }}”?</h2>
+<p class="text-secondary">{{ message }}</p>
+<form method="post" hx-post="{{ request.path }}" hx-target="#detail-content" hx-swap="outerHTML">
+  {% csrf_token %}
+  <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+    {% if is_modal %}
+      <button class="btn btn-ghost-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+    {% else %}
+      <a class="btn btn-ghost-secondary" href="{% url 'business:detail' business.id %}">Cancel</a>
+    {% endif %}
+    <button class="btn btn-danger" type="submit">Delete {{ source_label|lower }}</button>
+  </div>
+</form>

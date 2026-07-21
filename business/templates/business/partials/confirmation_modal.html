@@ -1,0 +1,11 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Delete {{ source_label|lower }}</h2>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      {% include "business/partials/confirmation.html" with message="This action cannot be undone." %}
+    </div>
+  </div>
+</div>

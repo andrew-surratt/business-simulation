@@ -1,0 +1,125 @@
+<div id="detail-content">
+  {% if is_fragment %}{% include "business/partials/messages.html" %}{% endif %}
+
+  <div class="mb-4 text-secondary">
+    <strong>Type:</strong> {{ business.type.name }}
+    <span class="mx-2" aria-hidden="true">·</span>
+    <strong>Location:</strong> {{ business.location }}
+  </div>
+
+  <div class="row row-cards mb-4">
+    <div class="col-12 col-md-4">
+      {% include "business/partials/summary_card.html" with label="Monthly revenue" currency=business.currency.symbol value=revenue_per_month value_class="text-success" %}
+    </div>
+    <div class="col-12 col-md-4">
+      {% include "business/partials/summary_card.html" with label="Monthly expenses" currency=business.currency.symbol value=expense_per_month value_class="text-danger" %}
+    </div>
+    <div class="col-12 col-md-4">
+      {% if profit_per_month > 0 %}
+        {% include "business/partials/summary_card.html" with label="Monthly profit" currency=business.currency.symbol value=profit_per_month value_class="text-success" %}
+      {% elif profit_per_month < 0 %}
+        {% include "business/partials/summary_card.html" with label="Monthly profit" currency=business.currency.symbol value=profit_per_month value_class="text-danger" %}
+      {% else %}
+        {% include "business/partials/summary_card.html" with label="Monthly profit" currency=business.currency.symbol value=profit_per_month %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row row-cards mb-4">
+    <div class="col-12 col-xl-6">
+      <section class="card h-100" aria-labelledby="revenue-sources-heading">
+        <div class="card-header">
+          <h2 class="card-title" id="revenue-sources-heading">Revenue Sources</h2>
+          <div class="card-actions">
+            <a class="btn btn-sm btn-primary" href="{% url 'business:revenue_source_create' business.id %}" hx-get="{% url 'business:revenue_source_create' business.id %}" hx-target="#modal-content" hx-swap="innerHTML">Add revenue</a>
+          </div>
+        </div>
+        {% if revenue_sources %}
+          {% include "business/partials/source_table.html" with heading="Revenue Sources" sources=revenue_sources source_kind="revenue" %}
+        {% else %}
+          <div class="card-body">
+            {% url 'business:revenue_source_create' business.id as add_revenue_url %}
+            {% include "business/partials/empty_state.html" with title="No revenue sources" description="Add projected income for this business." action_url=add_revenue_url action_label="Add revenue" use_modal=True %}
+          </div>
+        {% endif %}
+      </section>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <section class="card h-100" aria-labelledby="expense-sources-heading">
+        <div class="card-header">
+          <h2 class="card-title" id="expense-sources-heading">Expense Sources</h2>
+          <div class="card-actions">
+            <a class="btn btn-sm btn-primary" href="{% url 'business:expense_source_create' business.id %}" hx-get="{% url 'business:expense_source_create' business.id %}" hx-target="#modal-content" hx-swap="innerHTML">Add expense</a>
+          </div>
+        </div>
+        {% if expense_sources %}
+          {% include "business/partials/source_table.html" with heading="Expense Sources" sources=expense_sources source_kind="expense" %}
+        {% else %}
+          <div class="card-body">
+            {% url 'business:expense_source_create' business.id as add_expense_url %}
+            {% include "business/partials/empty_state.html" with title="No expense sources" description="Add projected costs for this business." action_url=add_expense_url action_label="Add expense" use_modal=True %}
+          </div>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+
+  <section class="card" aria-labelledby="profit-projection-heading">
+    <div class="card-header">
+      <h2 class="card-title" id="profit-projection-heading">Profit projection</h2>
+    </div>
+    <div class="card-body">
+      <div class="profit-chart">
+        <canvas id="chart" aria-label="Cumulative profit projection for twelve months" role="img"></canvas>
+      </div>
+      {% with bid=business.id|stringformat:"s" %}
+        {% with labels_id="chart-labels-"|add:bid values_id="chart-values-"|add:bid %}
+          {{ labels|json_script:labels_id }}
+          {{ values|json_script:values_id }}
+          <script>
+            (() => {
+              const canvas = document.getElementById("chart");
+              if (!canvas || typeof Chart === "undefined") return;
+
+              // Cleanup previous chart instance if it exists on this canvas
+              if (canvas._chart) {
+                canvas._chart.destroy();
+              }
+
+              const labels = JSON.parse(document.getElementById("{{ labels_id }}").textContent);
+              const values = JSON.parse(document.getElementById("{{ values_id }}").textContent);
+
+              canvas._chart = new Chart(canvas, {
+                type: "bar",
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    label: "Cumulative profit ({{ business.currency.symbol|escapejs }})",
+                    data: values,
+                    backgroundColor: "rgba(32, 107, 196, 0.18)",
+                    borderColor: "rgb(32, 107, 196)",
+                    borderWidth: 1,
+                  }],
+                },
+                options: {
+                  maintainAspectRatio: false,
+                  responsive: true,
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: "Month",
+                      },
+                    },
+                    y: { beginAtZero: true },
+                  },
+                },
+              });
+            })();
+          </script>
+        {% endwith %}
+      {% endwith %}
+    </div>
+  </section>
+</div>

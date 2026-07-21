@@ -1,0 +1,20 @@
+{% load crispy_forms_tags %}
+
+<form
+  method="post"
+  novalidate
+  hx-post="{{ request.path }}"
+  hx-target="{{ form_target }}"
+  hx-swap="outerHTML"
+>
+  {% csrf_token %}
+  {{ form|crispy }}
+  <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
+    {% if is_modal %}
+      <button class="btn btn-ghost-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+    {% else %}
+      <a class="btn btn-ghost-secondary" href="{{ cancel_href }}">Cancel</a>
+    {% endif %}
+    <button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+  </div>
+</form>

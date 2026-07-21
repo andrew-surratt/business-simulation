@@ -1,0 +1,31 @@
+<div class="table-responsive">
+  <table class="table table-vcenter card-table">
+    <caption class="visually-hidden">{{ heading }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Frequency</th>
+        <th scope="col"><span class="visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for source in sources %}
+        <tr>
+          <th scope="row">{{ source.name }}</th>
+          <td>{{ source.currency.symbol }}{{ source.amount|floatformat:2 }}</td>
+          <td>{{ source.frequency.name }}</td>
+          <td class="text-end text-nowrap">
+            {% if source_kind == "revenue" %}
+              <a class="btn btn-sm btn-ghost-primary" href="{% url 'business:revenue_source_edit' business.id source.id %}" hx-get="{% url 'business:revenue_source_edit' business.id source.id %}" hx-target="#modal-content" hx-swap="innerHTML">Edit</a>
+              <a class="btn btn-sm btn-ghost-danger" href="{% url 'business:revenue_source_delete' business.id source.id %}" hx-get="{% url 'business:revenue_source_delete' business.id source.id %}" hx-target="#modal-content" hx-swap="innerHTML">Delete</a>
+            {% else %}
+              <a class="btn btn-sm btn-ghost-primary" href="{% url 'business:expense_source_edit' business.id source.id %}" hx-get="{% url 'business:expense_source_edit' business.id source.id %}" hx-target="#modal-content" hx-swap="innerHTML">Edit</a>
+              <a class="btn btn-sm btn-ghost-danger" href="{% url 'business:expense_source_delete' business.id source.id %}" hx-get="{% url 'business:expense_source_delete' business.id source.id %}" hx-target="#modal-content" hx-swap="innerHTML">Delete</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

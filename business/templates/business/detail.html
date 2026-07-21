@@ -1,48 +1,18 @@
 {% extends "base_generic.html" %}
 
-{% block content %}
-  <h2>{{ business.name }}</h2>
-  <p class="mt-2"><strong>Type:</strong> {{ business.type.name }}</p>
-<p><strong>Location:</strong> {{ business.location }}</p>
-  <br>
-  <h5>Revenue Sources</h5>
-  <ul>
-  {% for source in revenue_sources %}
-    <li><strong>{{ source.name }}</strong> :: {{ source.currency.symbol }}{{ source.amount|floatformat:2 }} {{ source.frequency.name }}</li>
-  {% endfor %}
-  </ul>
+{% block title %}{{ business.name }} | Business Simulator{% endblock %}
+{% block page_title %}{{ business.name }}{% endblock %}
+{% block page_actions %}
+  <a
+    class="btn btn-outline-primary"
+    href="{% url 'business:business_edit' business.id %}"
+    hx-get="{% url 'business:business_edit' business.id %}"
+    hx-target="#modal-content"
+    hx-swap="innerHTML"
+  >Edit business</a>
+{% endblock %}
 
-  <h5>Expense Sources</h5>
-  <ul>
-  {% for source in expense_sources %}
-    <li><strong>{{ source.name }}</strong> :: {{ source.currency.symbol }}{{ source.amount|floatformat:2 }} {{ source.frequency.name }}</li>
-  {% endfor %}
-  </ul>
-    <div class="col-6">
-      <canvas id="chart"></canvas>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      <script>
-      const ctx = document.getElementById('chart').getContext('2d');
-      const myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels : [{% for item in labels %}"{{ item }}",{% endfor %}],
-              datasets: [{
-                label: "Profit over time by Month ({{ business.currency.symbol }})",
-                data : [{% for item in values %}{{ item }},{% endfor %}],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true
-                  }
-              }
-          }
-      });
-      </script>
-  </div>
+{% block content %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  {% include "business/partials/detail_content.html" %}
 {% endblock %}
