@@ -407,7 +407,7 @@ class DetailTemplateTest(TestCase):
         response = self.client.get(
             reverse('business:detail', args=[self.business.id])
         )
-        self.assertContains(response, '<canvas id="chart">')
+        self.assertContains(response, 'id="chart"')
     
     def test_detail_template_includes_chart_js_library(self):
         """Test that detail template includes Chart.js library"""

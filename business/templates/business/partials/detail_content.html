@@ -15,7 +15,13 @@
       {% include "business/partials/summary_card.html" with label="Monthly expenses" currency=business.currency.symbol value=expense_per_month value_class="text-danger" %}
     </div>
     <div class="col-12 col-md-4">
-      {% include "business/partials/summary_card.html" with label="Monthly profit" currency=business.currency.symbol value=profit_per_month %}
+      {% if profit_per_month > 0 %}
+        {% include "business/partials/summary_card.html" with label="Monthly profit" currency=business.currency.symbol value=profit_per_month value_class="text-success" %}
+      {% elif profit_per_month < 0 %}
+        {% include "business/partials/summary_card.html" with label="Monthly profit" currency=business.currency.symbol value=profit_per_month value_class="text-danger" %}
+      {% else %}
+        {% include "business/partials/summary_card.html" with label="Monthly profit" currency=business.currency.symbol value=profit_per_month %}
+      {% endif %}
     </div>
   </div>
 
@@ -64,44 +70,56 @@
       <h2 class="card-title" id="profit-projection-heading">Profit projection</h2>
     </div>
     <div class="card-body">
-      <div class="profit-chart" aria-label="Cumulative profit projection for twelve months" role="img">
-        <canvas id="chart"></canvas>
+      <div class="profit-chart">
+        <canvas id="chart" aria-label="Cumulative profit projection for twelve months" role="img"></canvas>
       </div>
-      {{ labels|json_script:"chart-labels" }}
-      {{ values|json_script:"chart-values" }}
-      <script>
-        (() => {
-          const canvas = document.getElementById("chart");
-          if (!canvas || typeof Chart === "undefined") return;
-          window.businessProfitChart?.destroy();
-          window.businessProfitChart = new Chart(canvas, {
-            type: "bar",
-            data: {
-              labels: JSON.parse(document.getElementById("chart-labels").textContent),
-              datasets: [{
-                label: "Cumulative profit ({{ business.currency.symbol|escapejs }})",
-                data: JSON.parse(document.getElementById("chart-values").textContent),
-                backgroundColor: "rgba(32, 107, 196, 0.18)",
-                borderColor: "rgb(32, 107, 196)",
-                borderWidth: 1,
-              }],
-            },
-            options: {
-              maintainAspectRatio: false,
-              responsive: true,
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: "Month",
+      {% with bid=business.id|stringformat:"s" %}
+        {% with labels_id="chart-labels-"|add:bid values_id="chart-values-"|add:bid %}
+          {{ labels|json_script:labels_id }}
+          {{ values|json_script:values_id }}
+          <script>
+            (() => {
+              const canvas = document.getElementById("chart");
+              if (!canvas || typeof Chart === "undefined") return;
+
+              // Cleanup previous chart instance if it exists on this canvas
+              if (canvas._chart) {
+                canvas._chart.destroy();
+              }
+
+              const labels = JSON.parse(document.getElementById("{{ labels_id }}").textContent);
+              const values = JSON.parse(document.getElementById("{{ values_id }}").textContent);
+
+              canvas._chart = new Chart(canvas, {
+                type: "bar",
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    label: "Cumulative profit ({{ business.currency.symbol|escapejs }})",
+                    data: values,
+                    backgroundColor: "rgba(32, 107, 196, 0.18)",
+                    borderColor: "rgb(32, 107, 196)",
+                    borderWidth: 1,
+                  }],
+                },
+                options: {
+                  maintainAspectRatio: false,
+                  responsive: true,
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: "Month",
+                      },
+                    },
+                    y: { beginAtZero: true },
                   },
                 },
-                y: { beginAtZero: true },
-              },
-            },
-          });
-        })();
-      </script>
+              });
+            })();
+          </script>
+        {% endwith %}
+      {% endwith %}
     </div>
   </section>
 </div>
